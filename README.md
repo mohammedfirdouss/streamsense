@@ -24,8 +24,6 @@ City streams suffer from sewage, dirty runoff, litter and loss of wildlife. Volu
 * **Reviewers:** coordinators and ecologists who check unusual reports.
 * **Decision makers:** environment and public health teams who need data they can trust.
 
-More details are in [DETAILS.md](DETAILS.md).
-
 ## License
 
 MIT
