@@ -1,0 +1,17 @@
+"use client";
+
+/**
+ * Downscale a photo in the browser before upload: phones produce 5–12 MB
+ * images, the vision model only needs ~1568px on the long edge, and small
+ * payloads keep the app usable on patchy mobile data at the stream bank.
+ */
+export async function resizeImage(file: File, maxEdge = 1568, quality = 0.82): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return canvas.toDataURL("image/jpeg", quality);
+}
