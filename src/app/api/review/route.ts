@@ -25,6 +25,8 @@ export async function POST(req: Request) {
   }
 
   const record = {
+    siteName: a.site?.name?.slice(0, 200) ?? "",
+    gpsSaved: a.site?.lat !== undefined && a.site?.lng !== undefined,
     weather: a.weather,
     observations: Object.fromEntries(INDICATORS.map((i) => [i.term, optionLabel(i.id, a.answers[i.id])])),
     wildlifeSeen: a.wildlife,
