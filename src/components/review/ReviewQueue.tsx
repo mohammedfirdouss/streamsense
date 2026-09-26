@@ -11,8 +11,8 @@ import { Badge, Button, Card, cx, type Tone } from "../ui";
 const STATUS_META: Record<ReviewStatus, { label: string; tone: Tone }> = {
   needs_review: { label: "Needs review", tone: "amber" },
   verified: { label: "Verified by reviewer", tone: "green" },
-  follow_up: { label: "Follow-up requested", tone: "orange" },
-  published: { label: "Auto-published (all checks passed)", tone: "cyan" },
+  follow_up: { label: "Follow up visit requested", tone: "orange" },
+  published: { label: "Published automatically", tone: "cyan" },
 };
 
 export function ReviewQueue() {
@@ -23,7 +23,7 @@ export function ReviewQueue() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setSubs(listSubmissions()), []);
 
-  if (!subs) return <p className="p-8 text-slate-600">Loading…</p>;
+  if (!subs) return <p className="p-8 text-ink-soft">Loading…</p>;
 
   const refresh = () => setSubs(listSubmissions());
   const shown = filter === "queue" ? subs.filter((s) => s.status === "needs_review") : subs;
@@ -31,28 +31,28 @@ export function ReviewQueue() {
   const agreement = decisions.length ? Math.round((100 * decisions.filter((d) => d === "accepted").length) / decisions.length) : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-semibold">Reviewer queue</h1>
-      <p className="mt-1 text-slate-600">Unusual reports are held for a trained human before they reach the public record. Reviewers see what the observer saw, what the AI suggested, and which checks fired.</p>
+    <div className="mx-auto max-w-5xl px-4 py-10">
+      <h1 className="font-display text-4xl font-semibold">Review queue</h1>
+      <p className="mt-2 max-w-prose text-ink-soft">Unusual reports wait here for a trained person before they are published. You can see what the volunteer saw, what the AI suggested, and which checks were raised.</p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-4">
+      <dl className="mt-8 grid grid-cols-2 border-y border-line sm:grid-cols-4">
         <Stat label="Reports" value={subs.length} />
-        <Stat label="Awaiting review" value={subs.filter((s) => s.status === "needs_review").length} />
-        <Stat label="One Health alerts" value={subs.reduce((n, s) => n + oneHealthSignals(s.assessment).filter((x) => x.severity === "urgent").length, 0)} />
-        <Stat label="Human–AI agreement" value={agreement === null ? "—" : `${agreement}%`} hint={`${decisions.length} AI suggestions reviewed by observers`} />
-      </div>
+        <Stat label="Waiting for review" value={subs.filter((s) => s.status === "needs_review").length} />
+        <Stat label="Urgent health alerts" value={subs.reduce((n, s) => n + oneHealthSignals(s.assessment).filter((x) => x.severity === "urgent").length, 0)} />
+        <Stat label="People agreed with the AI" value={agreement === null ? "None yet" : `${agreement}%`} hint={`across ${decisions.length} suggestions`} />
+      </dl>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2" role="tablist">
+      <div className="mt-8 flex flex-wrap items-center gap-2" role="tablist">
         {(["queue", "all"] as const).map((f) => (
-          <button key={f} role="tab" aria-selected={filter === f} onClick={() => setFilter(f)} className={cx("rounded-full px-4 py-1.5 text-sm", filter === f ? "bg-cyan-800 text-white" : "bg-white text-slate-700 ring-1 ring-slate-200")}>
+          <button key={f} role="tab" aria-selected={filter === f} onClick={() => setFilter(f)} className={cx("rounded-sm px-4 py-2 text-sm font-semibold", filter === f ? "bg-river text-card" : "border border-line bg-card text-ink-soft hover:text-ink")}>
             {f === "queue" ? "Needs review" : "All reports"}
           </button>
         ))}
-        <button className="ml-auto text-xs text-slate-500 underline" onClick={() => { resetDemoData(); refresh(); }}>Reset demo data</button>
+        <button className="ml-auto text-sm text-ink-soft underline underline-offset-4" onClick={() => { resetDemoData(); refresh(); }}>Reset demo data</button>
       </div>
 
       <div className="mt-4 space-y-4">
-        {shown.length === 0 && <Card><p className="text-slate-600">Nothing waiting. 🎉</p></Card>}
+        {shown.length === 0 && <Card><p className="text-ink-soft">Nothing is waiting for review.</p></Card>}
         {shown.map((s) => <SubmissionCard key={s.assessment.id} sub={s} onChange={refresh} />)}
       </div>
     </div>
@@ -61,10 +61,9 @@ export function ReviewQueue() {
 
 function Stat({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <p className="text-2xl font-semibold tabular-nums">{value}</p>
-      <p className="text-sm text-slate-600">{label}</p>
-      {hint && <p className="text-xs text-slate-500">{hint}</p>}
+    <div className="flex flex-col-reverse justify-end border-line px-1 py-4 sm:border-l sm:px-5 sm:first:border-l-0 sm:first:pl-0">
+      <dt className="mt-2 text-sm text-ink-soft">{label}{hint && <span className="block text-xs">{hint}</span>}</dt>
+      <dd className="font-display text-4xl leading-none font-bold tabular-nums">{value}</dd>
     </div>
   );
 }
@@ -83,74 +82,83 @@ function SubmissionCard({ sub, onChange }: { sub: Submission; onChange: () => vo
     onChange();
   };
 
+  const details = [
+    a.observer || "Anonymous",
+    new Date(a.createdAt).toLocaleDateString(),
+    a.weather === "dry" ? "Dry weather" : "After rain",
+    a.site.lat !== undefined ? `${a.site.lat}, ${a.site.lng}` : null,
+  ].filter(Boolean);
+
   return (
     <Card>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">{a.site.name}</h2>
-          <p className="text-sm text-slate-600">
-            {a.observer || "Anonymous"} · {new Date(a.createdAt).toLocaleDateString()} · {a.weather === "dry" ? "dry weather" : "after rain"}
-            {a.site.lat !== undefined && <> · {a.site.lat}, {a.site.lng}</>}
-          </p>
+          <h2 className="font-display text-2xl font-semibold">{a.site.name}</h2>
+          <ul className="mt-1 flex flex-wrap gap-x-4 text-sm text-ink-soft">
+            {details.map((d) => <li key={d}>{d}</li>)}
+          </ul>
         </div>
         <div className="flex flex-wrap gap-2">
-          {score.band && <Badge tone={BAND_META[score.band].tone}>SHI {score.score} · {BAND_META[score.band].label}</Badge>}
+          {score.band && <Badge tone={BAND_META[score.band].tone}>Score {score.score}, {BAND_META[score.band].label}</Badge>}
           <Badge tone={STATUS_META[sub.status].tone}>{STATUS_META[sub.status].label}</Badge>
         </div>
       </div>
 
-      <button className="mt-3 text-sm text-cyan-800 underline" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide details" : "Show details"}</button>
+      <button className="mt-3 text-sm font-semibold text-river-deep underline underline-offset-4" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide details" : "Show details"}</button>
 
       {open && (
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
-          <div className="space-y-5">
+        <div className="mt-5 grid gap-8 md:grid-cols-2">
+          <div className="space-y-6">
             {a.photos.length > 0 && (
               <div className="flex gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {a.photos.map((p, i) => <img key={i} src={p} alt={`Observer photo ${i + 1}`} className="h-24 w-24 rounded object-cover" />)}
+                {a.photos.map((p, i) => <img key={i} src={p} alt={`Volunteer photo ${i + 1}`} className="h-24 w-24 rounded-sm border border-line object-cover" />)}
               </div>
             )}
             <div>
-              <h3 className="mb-2 text-sm font-semibold">Observations &amp; AI audit trail</h3>
-              <table className="w-full text-sm">
-                <thead><tr className="text-left text-xs text-slate-500"><th className="pb-1 font-normal">Indicator</th><th className="pb-1 font-normal">Observer</th><th className="pb-1 font-normal">AI suggested</th></tr></thead>
-                <tbody>
-                  {Object.entries(a.answers).map(([id, v]) => {
-                    const ind = INDICATOR_BY_ID[id as keyof typeof INDICATOR_BY_ID];
-                    const s = a.aiSuggestions.find((x) => x.indicator === id);
-                    const decision = a.aiDecisions[ind.id];
-                    return (
-                      <tr key={id} className="border-t border-slate-100 align-top">
-                        <td className="py-1.5 pr-2 text-slate-600">{ind.term}</td>
-                        <td className="py-1.5 pr-2">{optionLabel(ind.id, v)}</td>
-                        <td className="py-1.5">
-                          {s ? (
-                            <span className={cx(decision === "rejected" && "text-orange-800")}>
-                              {optionLabel(ind.id, s.value)} <span className="text-xs text-slate-500">({s.confidence}{decision ? `, ${decision}` : ""})</span>
-                            </span>
-                          ) : <span className="text-slate-400">—</span>}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <h3 className="mb-2 font-semibold">What the volunteer chose and what the AI suggested</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="border-b border-line text-left text-ink-soft"><th className="pb-2 font-normal">Question</th><th className="pb-2 font-normal">Volunteer</th><th className="pb-2 font-normal text-pencil">AI</th></tr></thead>
+                  <tbody>
+                    {Object.entries(a.answers).map(([id, v]) => {
+                      const ind = INDICATOR_BY_ID[id as keyof typeof INDICATOR_BY_ID];
+                      const s = a.aiSuggestions.find((x) => x.indicator === id);
+                      const decision = a.aiDecisions[ind.id];
+                      return (
+                        <tr key={id} className={cx("border-b border-line/60 align-top", decision === "rejected" && "bg-orange-50")}>
+                          <td className="py-2 pr-2 text-ink-soft">{ind.term}</td>
+                          <td className="py-2 pr-2 font-semibold">{optionLabel(ind.id, v)}</td>
+                          <td className="py-2 text-pencil">
+                            {s ? (
+                              <>
+                                {optionLabel(ind.id, s.value)}
+                                <span className="block text-xs text-ink-soft">{s.confidence} confidence{decision === "rejected" ? ", volunteer disagreed" : decision === "accepted" ? ", volunteer agreed" : ""}</span>
+                              </>
+                            ) : <span className="text-ink-soft">None</span>}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            {a.notes && <p className="rounded bg-slate-50 p-3 text-sm italic text-slate-700">“{a.notes}”</p>}
+            {a.notes && <blockquote className="border-l-2 border-silt pl-4 text-ink-soft italic">{a.notes}</blockquote>}
           </div>
 
-          <div className="space-y-5">
-            <div><h3 className="mb-2 text-sm font-semibold">Why it&apos;s here</h3><CheckList checks={checks} /></div>
-            <div><h3 className="mb-2 text-sm font-semibold">One Health signals</h3><SignalList signals={signals} /></div>
+          <div className="space-y-6">
+            <div><h3 className="mb-2 font-semibold">Why it is here</h3><CheckList checks={checks} /></div>
+            <div><h3 className="mb-2 font-semibold">Health alerts</h3><SignalList signals={signals} /></div>
             <ConfidenceMeter confidence={confidence} />
-            <div className="rounded-lg border border-slate-200 p-3">
-              <label className="block text-sm font-medium" htmlFor={`note-${a.id}`}>Reviewer note</label>
-              <textarea id={`note-${a.id}`} className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-sm" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Feedback is sent to the observer — keep it encouraging." />
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Button className="min-h-9 py-1" onClick={() => decide("verified")}>✓ Verify &amp; publish</Button>
-                <Button variant="secondary" className="min-h-9 py-1" onClick={() => decide("follow_up")}>Request follow-up visit</Button>
+            <div className="rounded-sm border border-line bg-paper/60 p-4">
+              <label className="block font-semibold" htmlFor={`note-${a.id}`}>Note to the volunteer</label>
+              <textarea id={`note-${a.id}`} className="mt-1.5 w-full rounded-sm border border-line bg-card px-3 py-2 text-sm" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="The volunteer will see this, so keep it encouraging." />
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button className="min-h-9 py-1" onClick={() => decide("verified")}>Verify &amp; publish</Button>
+                <Button variant="secondary" className="min-h-9 py-1" onClick={() => decide("follow_up")}>Ask for a follow up visit</Button>
               </div>
-              {sub.reviewedAt && <p className="mt-2 text-xs text-slate-500">Last decision {new Date(sub.reviewedAt).toLocaleString()}</p>}
+              {sub.reviewedAt && <p className="mt-2 text-xs text-ink-soft">Last decision {new Date(sub.reviewedAt).toLocaleString()}</p>}
             </div>
           </div>
         </div>
