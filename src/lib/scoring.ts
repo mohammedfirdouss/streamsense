@@ -94,9 +94,9 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       severity: peopleInWater || dogsInWater ? "urgent" : "concern",
       title: "Possible sewage contamination",
       explanation:
-        "Sewage smell, dark water or a dirty discharging pipe are strong signs of faecal bacteria such as E. coli." +
+        "A sewage smell, dark water or a pipe pouring out dirty water are strong signs of germs from poo, such as E. coli." +
         (peopleInWater ? " People were seen in contact with the water." : ""),
-      action: "Avoid contact with the water. Report the location to your local water utility or environment agency.",
+      action: "Stay out of the water. Report the place to your local water company or environment agency.",
     });
   }
 
@@ -105,9 +105,9 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       id: "cyanobacteria",
       lens: dogsInWater ? "animal" : "human",
       severity: dogsInWater || peopleInWater ? "urgent" : "concern",
-      title: "Possible harmful algal bloom",
+      title: "Possible poisonous algae",
       explanation:
-        "Dense green blooms can contain cyanobacteria, whose toxins can harm people and are a known cause of dog deaths.",
+        "Thick green algae can be blue green algae, which is poisonous to people and can kill dogs.",
       action: "Keep dogs and children out of the water. Photograph the bloom and report it.",
     });
   }
@@ -119,8 +119,8 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       severity: "urgent",
       title: "Dead fish or animals reported",
       explanation:
-        "Deaths can signal a pollution event, low oxygen or disease — and may affect other wildlife and pets.",
-      action: "Do not touch the animals. Report immediately to the environmental authority's incident line.",
+        "Dead animals can mean pollution, too little oxygen or disease. Other wildlife and pets may be at risk too.",
+      action: "Don't touch the animals. Report it straight away to the environment agency's incident line.",
     });
   }
 
@@ -130,8 +130,8 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       lens: "environment",
       severity: "concern",
       title: "Possible chemical or fuel pollution",
-      explanation: "Oily sheens and chemical smells indicate hydrocarbons or other toxic substances.",
-      action: "Note the source if visible and report it. Avoid contact.",
+      explanation: "Oil on the water and chemical smells mean fuel or other harmful substances are getting in.",
+      action: "Note where it is coming from if you can see it, and report it. Stay out of the water.",
     });
   }
 
@@ -140,9 +140,9 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       id: "low_oxygen",
       lens: "animal",
       severity: "watch",
-      title: "Warm, slow water — oxygen stress risk",
-      explanation: "Warm still water holds little oxygen, stressing fish and invertebrates, and can breed mosquitoes.",
-      action: "Re-survey after a few days to see if conditions persist.",
+      title: "Warm, slow water may be low in oxygen",
+      explanation: "Warm, still water holds little oxygen, which harms fish and water insects, and can breed mosquitoes.",
+      action: "Check again in a few days to see if it is still the same.",
     });
   }
 
@@ -151,10 +151,10 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       id: "nutrients",
       lens: "environment",
       severity: a.tests.nitrateMgL > 50 ? "concern" : "watch",
-      title: "Elevated nitrate",
+      title: "High nitrate",
       explanation:
-        "High nitrate (from fertiliser, sewage or runoff) drives algal blooms and, above 50 mg/L, exceeds drinking-water limits.",
-      action: "Look upstream for farmland, drains or outfalls that may be the source.",
+        "Nitrate comes from fertiliser, sewage or rainwater running off the land. Too much makes algae grow, and above 50 mg/L it is over the safe limit for drinking water.",
+      action: "Look upstream for farmland, drains or pipes that could be the cause.",
     });
   }
 
@@ -163,9 +163,9 @@ export function oneHealthSignals(a: Assessment): OneHealthSignal[] {
       id: "habitat",
       lens: "environment",
       severity: "watch",
-      title: "Degraded bank habitat",
-      explanation: "Hard or eroding banks remove the natural filter and wildlife corridor that healthy streams provide.",
-      action: "This site may be a good candidate for community planting or restoration.",
+      title: "Damaged banks",
+      explanation: "Concrete or crumbling banks can't clean the water or give wildlife a safe path the way healthy banks do.",
+      action: "This could be a good spot for community planting or repair work.",
     });
   }
 

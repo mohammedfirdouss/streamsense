@@ -30,16 +30,16 @@ export function demoReview(a: Assessment, score: StreamHealthScore, signals: One
   const top = score.contributions[0];
   return {
     plainLanguageSummary:
-      `This stream scored ${score.score ?? "—"}/100 on the Stream Health Index.` +
+      `This stream scored ${score.score ?? "no score"} out of 100 on the Stream Health Index.` +
       (top ? ` The biggest pressure you recorded was ${top.term.toLowerCase()}.` : "") +
-      " Thank you — every survey adds to the picture of how this stream changes over time.",
+      " Thank you. Every survey adds to the picture of how this stream changes over time.",
     oneHealth: {
       human: signals.some((s) => s.lens === "human")
         ? "Some observations suggest the water may carry germs or toxins, so skin contact is best avoided until conditions improve."
         : "Nothing you recorded points to a direct risk for people, though urban streams should never be drunk from.",
       animal: a.wildlife.length
         ? `You saw ${a.wildlife.length === 1 ? "one kind" : `${a.wildlife.length} kinds`} of wildlife, a sign the stream still supports life.`
-        : "No wildlife was recorded — that doesn't mean none is present, but a return visit could tell us more.",
+        : "No wildlife was recorded. That doesn't mean there is none, but another visit could tell us more.",
       environment:
         score.band === "healthy"
           ? "The banks and water look in good shape, providing habitat and natural filtering."
@@ -47,7 +47,7 @@ export function demoReview(a: Assessment, score: StreamHealthScore, signals: One
     },
     doubleCheckQuestions: [],
     nextSteps: [
-      "Re-survey the same spot in two weeks, ideally after rain, to see how it responds.",
+      "Survey the same spot again in two weeks, ideally after rain, to see how it changes.",
       ...(signals.length ? ["Share the flagged issues with your local environment agency."] : []),
     ],
   };

@@ -28,14 +28,14 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
     checks.push({
       id: "no_location",
       level: "warning",
-      message: "No GPS location — the report can't be mapped or compared over time.",
+      message: "No location saved, so the report can't be put on a map or compared over time.",
     });
   }
   if (a.photos.length === 0) {
     checks.push({
       id: "no_photo",
       level: "warning",
-      message: "No photo attached. Photos let reviewers verify reports and greatly increase their value.",
+      message: "No photo added. Photos help reviewers check reports and make them much more useful.",
     });
   }
 
@@ -44,20 +44,20 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
     checks.push({
       id: "incomplete",
       level: answered < 3 ? "error" : "info",
-      message: `${answered} of ${INDICATORS.length} observations answered${answered < 3 ? " — answer at least 3 to get a health score" : ""}.`,
+      message: `${answered} of ${INDICATORS.length} observations answered${answered < 3 ? ". Answer at least 3 to get a health score" : ""}.`,
     });
   }
 
   const { ph, temperatureC, nitrateMgL } = a.tests;
   if (ph !== undefined) {
     if (ph < 0 || ph > 14) {
-      checks.push({ id: "ph_range", level: "error", message: `pH ${ph} is impossible — pH runs from 0 to 14.` });
+      checks.push({ id: "ph_range", level: "error", message: `pH ${ph} isn't possible. pH goes from 0 to 14.` });
     } else if (ph < 5 || ph > 9.5) {
       checks.push({
         id: "ph_unusual",
         level: "warning",
-        message: `pH ${ph} is very unusual for an urban stream (typically 6.5–8.5).`,
-        prompt: "Could the test strip have been read in poor light or after the recommended time?",
+        message: `pH ${ph} is very unusual for a city stream. It is usually between 6.5 and 8.5.`,
+        prompt: "Could the test strip have been read in poor light, or after waiting too long?",
       });
     }
   }
@@ -65,12 +65,12 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
     checks.push({
       id: "temp_unusual",
       level: "warning",
-      message: `${temperatureC}°C is outside the normal range for flowing water.`,
-      prompt: "Was the thermometer in the water for at least a minute, out of direct sun?",
+      message: `${temperatureC}°C is outside the normal range for a stream.`,
+      prompt: "Was the thermometer in the water for at least a minute, out of the sun?",
     });
   }
   if (nitrateMgL !== undefined && (nitrateMgL < 0 || nitrateMgL > 500)) {
-    checks.push({ id: "nitrate_range", level: "error", message: `Nitrate ${nitrateMgL} mg/L isn't plausible.` });
+    checks.push({ id: "nitrate_range", level: "error", message: `Nitrate ${nitrateMgL} mg/L isn't possible. Please check it again.` });
   }
 
   // Internal consistency — combinations that are possible but rare.
@@ -78,7 +78,7 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
     checks.push({
       id: "clarity_conflict",
       level: "warning",
-      message: "Water is marked clear, but also dark or with a bloom.",
+      message: "The water is marked clear, but also dark or full of algae.",
       prompt: "Were you looking at different parts of the stream? If so, describe the worst part.",
     });
   }
@@ -86,23 +86,23 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
     checks.push({
       id: "dry_with_film",
       level: "warning",
-      message: "The stream is marked dry but a surface film is recorded.",
-      prompt: "Is there standing water in pools? If so, choose 'Still / stagnant' for flow.",
+      message: "The stream is marked dry, but something on the water surface is recorded.",
+      prompt: "Is there standing water in pools? If so, choose 'Still, not moving' for how the water is moving.",
     });
   }
   if (a.wildlife.includes("dead_animals") && ans.odour === "none" && ans.waterClarity === "clear") {
     checks.push({
       id: "dead_animals_clean",
       level: "info",
-      message: "Dead animals were reported in otherwise clean-looking water — a reviewer will take a look.",
-      prompt: "A close-up photo helps experts tell pollution from natural causes.",
+      message: "Dead animals were reported in water that otherwise looks clean. A reviewer will take a look.",
+      prompt: "A close up photo helps experts tell pollution apart from natural causes.",
     });
   }
   if (a.weather !== "dry" && ans.outfalls === "clear_discharge") {
     checks.push({
       id: "wet_weather_outfall",
       level: "info",
-      message: "Pipes often discharge rainwater after rain — this is usually normal.",
+      message: "Pipes often pour out rainwater after rain. This is usually normal.",
     });
   }
   if (a.humanContact.includes("none_seen") && a.humanContact.length > 1) {
@@ -126,7 +126,7 @@ export function validateAssessment(a: Assessment): ValidationCheck[] {
       id: `disagree_${s.indicator}`,
       level: "info",
       message: `${ind.term}: you said "${optionLabel(s.indicator, human)}", the photo assistant suggested "${optionLabel(s.indicator, s.value)}".`,
-      prompt: "You were there — your answer is kept. A reviewer may compare it with the photo.",
+      prompt: "You were there, so your answer is kept. A reviewer may compare it with the photo.",
     });
   }
 

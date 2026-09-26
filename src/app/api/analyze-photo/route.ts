@@ -16,7 +16,7 @@ const Body = z.object({
 export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return Response.json({ error: "Send 1–3 JPEG, PNG or WebP photos." }, { status: 400 });
+    return Response.json({ error: "Send 1 to 3 JPEG, PNG or WebP photos." }, { status: 400 });
   }
 
   if (!aiEnabled()) {

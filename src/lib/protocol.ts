@@ -52,17 +52,17 @@ export const INDICATORS: Indicator[] = [
     question: "How clear is the water?",
     term: "Turbidity",
     termExplainer:
-      "Turbidity is how cloudy water is because of tiny floating particles like silt, algae or pollution.",
+      "Turbidity means how cloudy the water is. Tiny bits of mud, algae or pollution floating in it make it cloudy.",
     whyItMatters:
-      "Cloudy water blocks sunlight for plants, clogs fish gills and can carry bacteria that make people and pets sick.",
+      "Cloudy water blocks sunlight for plants, clogs fish gills and can carry germs that make people and pets sick.",
     lenses: ["environment", "animal", "human"],
     visual: true,
     weight: 1.2,
     options: [
-      { value: "clear", label: "Clear — I can see the bottom", stress: 0 },
+      { value: "clear", label: "Clear, I can see the bottom", stress: 0 },
       { value: "slightly_cloudy", label: "Slightly cloudy", stress: 1 },
-      { value: "murky", label: "Murky — hard to see into", stress: 2 },
-      { value: "opaque", label: "Opaque — can't see in at all", stress: 3 },
+      { value: "murky", label: "Murky, hard to see into", stress: 2 },
+      { value: "opaque", label: "Can't see into it at all", stress: 3 },
     ],
   },
   {
@@ -70,27 +70,27 @@ export const INDICATORS: Indicator[] = [
     question: "What colour is the water?",
     term: "Apparent colour",
     termExplainer:
-      "The colour you see from the bank. Natural streams are usually colourless or tea-brown from leaves.",
+      "The colour you see from the bank. Natural streams are usually clear, or light brown like tea from fallen leaves.",
     whyItMatters:
-      "Bright green can mean an algal bloom; grey or milky water often points to sewage or chemical discharge.",
+      "Bright green can mean too much algae. Grey or milky water often means sewage or chemicals are getting in.",
     lenses: ["environment", "human"],
     visual: true,
     weight: 1,
     options: [
       { value: "none", label: "Colourless", stress: 0 },
-      { value: "tea_brown", label: "Tea-brown (natural leaf tannins)", stress: 0 },
+      { value: "tea_brown", label: "Light brown like tea (natural, from leaves)", stress: 0 },
       { value: "green", label: "Green", stress: 2 },
       { value: "grey_black", label: "Grey or black", stress: 3 },
-      { value: "unusual", label: "Unusual (milky, red, orange…)", stress: 3 },
+      { value: "unusual", label: "Something odd, like milky, red or orange", stress: 3 },
     ],
   },
   {
     id: "odour",
     question: "What does it smell like?",
     term: "Odour",
-    termExplainer: "Smell is one of the fastest ways to detect sewage or chemical pollution.",
+    termExplainer: "Smell is one of the quickest ways to notice sewage or chemicals.",
     whyItMatters:
-      "A sewage smell means likely faecal bacteria — a direct risk for anyone (or any dog) touching the water.",
+      "A sewage smell means there are probably germs from poo in the water. That is a direct risk for anyone, or any dog, that touches it.",
     lenses: ["human", "animal"],
     visual: false,
     weight: 1.3,
@@ -105,11 +105,11 @@ export const INDICATORS: Indicator[] = [
   {
     id: "surfaceFilm",
     question: "Is there anything on the water surface?",
-    term: "Surface film / foam",
+    term: "Surface film and foam",
     termExplainer:
-      "Films and foams can be natural (from decaying plants) or caused by oil, detergents and sewage.",
+      "Films and foam can be natural, from rotting plants, or caused by oil, soap and sewage.",
     whyItMatters:
-      "Oily sheens and soapy foam harm birds' feathers and aquatic insects that fish depend on.",
+      "Oil and soapy foam damage birds' feathers and harm the water insects that fish eat.",
     lenses: ["animal", "environment"],
     visual: true,
     weight: 1,
@@ -123,28 +123,28 @@ export const INDICATORS: Indicator[] = [
   {
     id: "algae",
     question: "How much green slime or weed is in the water?",
-    term: "Algae / eutrophication",
+    term: "Algae and eutrophication",
     termExplainer:
-      "Eutrophication is when too many nutrients (from fertiliser or sewage) make algae grow out of control.",
+      "Eutrophication is when too much fertiliser or sewage feeds the water and algae grows out of control.",
     whyItMatters:
-      "Algal blooms use up oxygen, killing fish. Some (cyanobacteria) are toxic to people and are a known cause of dog deaths.",
+      "Thick algae uses up the oxygen in the water and kills fish. Some kinds, called blue green algae, are poisonous to people and can kill dogs.",
     lenses: ["environment", "animal", "human"],
     visual: true,
     weight: 1.2,
     options: [
       { value: "none", label: "None or a little on rocks", stress: 0 },
       { value: "some", label: "Some patches", stress: 1 },
-      { value: "lots", label: "Lots — covers much of the bed", stress: 2 },
-      { value: "bloom", label: "Surface scum or bright green bloom", stress: 3 },
+      { value: "lots", label: "Lots, covering much of the stream bed", stress: 2 },
+      { value: "bloom", label: "Bright green scum on the surface", stress: 3 },
     ],
   },
   {
     id: "litter",
     question: "How much litter is in or near the stream?",
     term: "Anthropogenic litter",
-    termExplainer: "Human-made waste: plastics, cans, trolleys, fly-tipping.",
+    termExplainer: "Rubbish left by people, like plastic, cans, trolleys and dumped waste.",
     whyItMatters:
-      "Litter entangles wildlife, breaks down into microplastics, and signals how a place is valued by its community.",
+      "Litter traps and injures wildlife, breaks down into tiny bits of plastic, and shows how much a place is cared for.",
     lenses: ["animal", "environment"],
     visual: true,
     weight: 0.8,
@@ -159,17 +159,17 @@ export const INDICATORS: Indicator[] = [
     id: "flow",
     question: "How is the water moving?",
     term: "Flow regime",
-    termExplainer: "How fast and how much water moves. Flow carries oxygen and flushes pollution.",
+    termExplainer: "How fast the water moves and how much of it there is. Moving water carries oxygen and washes pollution away.",
     whyItMatters:
-      "Still, warm water holds less oxygen and can breed mosquitoes; very low flow concentrates pollution.",
+      "Still, warm water holds less oxygen and can breed mosquitoes. When there is very little water, pollution is stronger.",
     lenses: ["environment", "human"],
     visual: true,
     weight: 0.6,
     options: [
       { value: "moderate", label: "Flowing steadily", stress: 0 },
-      { value: "fast", label: "Fast or turbulent", stress: 0 },
+      { value: "fast", label: "Fast or rough", stress: 0 },
       { value: "slow", label: "Slow, barely moving", stress: 1 },
-      { value: "still", label: "Still / stagnant", stress: 2 },
+      { value: "still", label: "Still, not moving", stress: 2 },
       { value: "dry", label: "Dry or almost dry", stress: 3 },
     ],
   },
@@ -178,9 +178,9 @@ export const INDICATORS: Indicator[] = [
     question: "What's growing along the banks?",
     term: "Riparian vegetation",
     termExplainer:
-      "The riparian zone is the strip of land beside a stream. Plants there filter runoff and shade the water.",
+      "The riparian zone is the strip of land along a stream. Plants there clean rainwater running off the land and shade the water.",
     whyItMatters:
-      "Healthy banks filter pollution before it reaches the water, keep it cool for fish and give wildlife a corridor through the city.",
+      "Healthy banks stop pollution before it reaches the water, keep it cool for fish, and give wildlife a safe path through the city.",
     lenses: ["environment", "animal"],
     visual: true,
     weight: 1,
@@ -195,9 +195,9 @@ export const INDICATORS: Indicator[] = [
     id: "bankErosion",
     question: "Are the banks collapsing or eroding?",
     term: "Bank erosion",
-    termExplainer: "Soil washing or falling into the stream from the banks.",
+    termExplainer: "Soil from the banks washing or falling into the stream.",
     whyItMatters:
-      "Erosion smothers fish spawning gravels with silt and can undermine paths and property.",
+      "Falling soil covers the gravel where fish lay eggs, and can weaken nearby paths and buildings.",
     lenses: ["environment", "human"],
     visual: true,
     weight: 0.8,
@@ -212,17 +212,17 @@ export const INDICATORS: Indicator[] = [
     question: "Can you see any pipes flowing into the stream?",
     term: "Outfalls",
     termExplainer:
-      "An outfall is a pipe that discharges into a waterbody — usually surface water drains, sometimes misconnected sewage.",
+      "An outfall is a pipe that empties into a stream. Most carry rainwater from drains, but some are wrongly connected to sewage.",
     whyItMatters:
-      "Discharging pipes in dry weather often mean sewage misconnections: a top source of urban stream pollution.",
+      "A pipe flowing in dry weather often means sewage is going the wrong way. This is one of the biggest causes of pollution in city streams.",
     lenses: ["human", "environment"],
     visual: true,
     weight: 1.1,
     options: [
       { value: "none", label: "No pipes seen", stress: 0 },
       { value: "dry", label: "Pipe present but dry", stress: 0 },
-      { value: "clear_discharge", label: "Pipe discharging clear water", stress: 1 },
-      { value: "dirty_discharge", label: "Pipe discharging discoloured or smelly water", stress: 3 },
+      { value: "clear_discharge", label: "Pipe pouring out clear water", stress: 1 },
+      { value: "dirty_discharge", label: "Pipe pouring out dirty or smelly water", stress: 3 },
     ],
   },
 ];
@@ -291,7 +291,7 @@ export interface Assessment {
 }
 
 export function optionLabel(id: IndicatorId, value: string | undefined): string {
-  if (!value) return "—";
+  if (!value) return "Not answered";
   if (value === "cannot_tell") return "Can't tell from photo";
   return INDICATOR_BY_ID[id].options.find((o) => o.value === value)?.label ?? value;
 }

@@ -83,7 +83,7 @@ function seedSubmissions(): Submission[] {
       assessment: seed(
         {
           observer: "Amara (Year 9 class)",
-          site: { name: "Millbrook — footbridge by the school", lat: 51.5412, lng: -0.1421 },
+          site: { name: "Millbrook, footbridge by the school", lat: 51.5412, lng: -0.1421 },
           weather: "dry",
           answers: {
             waterClarity: "murky",
@@ -116,7 +116,7 @@ function seedSubmissions(): Submission[] {
       assessment: seed(
         {
           observer: "Jonas",
-          site: { name: "Alder Brook — nature reserve", lat: 51.5528, lng: -0.1609 },
+          site: { name: "Alder Brook, nature reserve", lat: 51.5528, lng: -0.1609 },
           weather: "dry",
           answers: {
             waterClarity: "clear",
@@ -143,7 +143,7 @@ function seedSubmissions(): Submission[] {
       assessment: seed(
         {
           observer: "Priya",
-          site: { name: "Canal feeder — Station Road culvert" },
+          site: { name: "Canal feeder, Station Road tunnel" },
           weather: "dry",
           answers: {
             waterClarity: "clear",
