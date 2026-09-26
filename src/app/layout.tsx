@@ -1,46 +1,48 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Zilla_Slab } from "next/font/google";
 import Link from "next/link";
+import { StreamMark } from "@/components/ui";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const body = Atkinson_Hyperlegible_Next({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const slab = Zilla_Slab({
+  variable: "--font-slab",
+  weight: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "StreamSense — AI-supported citizen stream assessment",
+  title: "StreamSense: check the health of your local stream",
   description:
-    "Assess urban streams with a photo assistant that suggests, explains and never decides. From streams to systems: One Health intelligence from citizen science.",
+    "Check the health of a city stream in about 10 minutes. A photo assistant suggests and explains. You decide.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${body.variable} ${slab.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-white focus:p-2">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-card focus:p-2">
           Skip to content
         </a>
-        <header className="border-b border-slate-200 bg-white">
-          <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3" aria-label="Main">
-            <Link href="/" className="flex items-center gap-2 font-semibold text-cyan-900">
-              <span aria-hidden className="text-xl">〰️</span> StreamSense
+        <header className="border-b border-line bg-card">
+          <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3" aria-label="Main">
+            <Link href="/" className="flex items-center gap-2 font-display text-2xl font-semibold text-river-deep">
+              <StreamMark className="h-5 w-9 text-river" /> StreamSense
             </Link>
-            <div className="flex flex-wrap gap-4 text-sm text-slate-700">
-              <Link href="/assess" className="hover:text-cyan-800">New survey</Link>
-              <Link href="/review" className="hover:text-cyan-800">Review queue</Link>
-              <Link href="/how-it-works" className="hover:text-cyan-800">How the AI works</Link>
+            <div className="flex flex-wrap gap-5 text-[0.95rem] text-ink-soft">
+              <Link href="/assess" className="underline-offset-4 hover:text-river-deep hover:underline">New survey</Link>
+              <Link href="/review" className="underline-offset-4 hover:text-river-deep hover:underline">Review queue</Link>
+              <Link href="/how-it-works" className="underline-offset-4 hover:text-river-deep hover:underline">How the AI works</Link>
             </div>
           </nav>
         </header>
         <main id="main" className="flex-1">{children}</main>
-        <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-600">
-          From streams to systems: turning citizen science into actionable One Health intelligence.
+        <footer className="border-t border-line py-6 text-center text-sm text-ink-soft">
+          People, animals and nature share the same water.
         </footer>
       </body>
     </html>

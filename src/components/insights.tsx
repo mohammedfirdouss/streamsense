@@ -1,7 +1,7 @@
 import type { Lens } from "@/lib/protocol";
 import type { HealthBand, OneHealthSignal, StreamHealthScore } from "@/lib/scoring";
 import type { DataConfidence, ValidationCheck } from "@/lib/validation";
-import { Badge, type Tone } from "./ui";
+import { Badge, Emoji, type Tone } from "./ui";
 
 export const BAND_META: Record<HealthBand, { label: string; tone: Tone; ring: string }> = {
   healthy: { label: "Healthy", tone: "green", ring: "text-emerald-600" },
@@ -99,10 +99,11 @@ export function CheckList({ checks }: { checks: ValidationCheck[] }) {
     <ul className="space-y-2">
       {checks.map((c) => (
         <li key={c.id} className={`text-sm ${CHECK_META[c.level].tone}`}>
-          <span aria-hidden>{CHECK_META[c.level].icon} </span>
+          <p>
+          <Emoji>{CHECK_META[c.level].icon}</Emoji>
           <span className="sr-only">{c.level}: </span>
-          {c.message}
-          {c.prompt && <span className="block pl-6 text-slate-600 italic">{c.prompt}</span>}
+          {c.message}</p>
+          {c.prompt && <p className="pl-6 text-slate-600 italic">{c.prompt}</p>}
         </li>
       ))}
     </ul>

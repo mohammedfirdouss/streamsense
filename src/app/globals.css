@@ -1,8 +1,28 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-slab);
+}
+
+/* Field notebook palette: survey card paper, river ink, silt rules, and
+   pencil blue for anything the AI wrote. */
+@theme {
+  --color-paper: #e7ece4;
+  --color-card: #f6f8f3;
+  --color-ink: #1b2721;
+  --color-ink-soft: #4b5b52;
+  --color-line: #c3cec4;
+  --color-river: #2d5c4c;
+  --color-river-deep: #1f4337;
+  --color-river-wash: #dae6dd;
+  --color-silt: #7b5b38;
+  --color-pencil: #2f5289;
+  --color-pencil-wash: #e2e8f2;
+}
+
+html {
+  scrollbar-gutter: stable;
 }
 
 :root {
@@ -10,11 +30,40 @@
 }
 
 body {
-  background: #f6f9f9;
-  color: #0f1f24;
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 3px solid #0e7490;
+  outline: 3px solid var(--color-pencil);
   outline-offset: 2px;
+}
+
+/* Faint survey card grid, used behind the field record on the home page. */
+.graph-paper {
+  background-color: var(--color-card);
+  background-image:
+    linear-gradient(to right, rgb(45 92 76 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(45 92 76 / 0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ink-in {
+    animation: ink-in 700ms ease-out both;
+  }
+  .ink-in-late {
+    animation: ink-in 700ms ease-out 900ms both;
+  }
+}
+
+@keyframes ink-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

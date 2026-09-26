@@ -18,7 +18,7 @@ import { oneHealthSignals, scoreAssessment } from "@/lib/scoring";
 import { saveSubmission, type Submission } from "@/lib/store";
 import { dataConfidence, validateAssessment } from "@/lib/validation";
 import { CheckList, ConfidenceMeter, LENS_META, ScoreDial, ScoreExplanation, SignalList } from "../insights";
-import { AiBadge, Badge, Button, Card, cx } from "../ui";
+import { AiBadge, Badge, Button, Card, cx, Emoji } from "../ui";
 
 const STEPS = ["Site", "Photos", "Observe", "Life & people", "Review"] as const;
 
@@ -128,7 +128,7 @@ function SiteStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
           <input className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={a.site.name} onChange={(e) => update({ site: { ...a.site, name: e.target.value } })} placeholder="e.g. Millbrook — by the footbridge" required />
         </label>
         <div>
-          <Button variant="secondary" onClick={locate} disabled={locating}>📍 {locating ? "Finding you…" : a.site.lat ? "Update location" : "Use my location"}</Button>
+          <Button variant="secondary" onClick={locate} disabled={locating}><Emoji>📍</Emoji>{locating ? "Finding you…" : a.site.lat ? "Update location" : "Use my location"}</Button>
           {a.site.lat !== undefined && <p className="mt-2 text-sm text-emerald-800">✓ Location saved ({a.site.lat}, {a.site.lng})</p>}
           {geoError && <p className="mt-2 text-sm text-amber-800" role="alert">{geoError}</p>}
         </div>
@@ -136,8 +136,8 @@ function SiteStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
           <legend className="text-sm font-medium">Weather</legend>
           <p className="text-xs text-slate-600">Rain washes pollution from roads into streams, so it changes what you&apos;ll see.</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {([["dry", "☀️ Dry for 2+ days"], ["rain_24h", "🌦 Rained in the last day"], ["raining", "🌧 Raining now"]] as const).map(([v, l]) => (
-              <Choice key={v} name="weather" checked={a.weather === v} onChange={() => update({ weather: v })} label={l} />
+            {([["dry", "☀️", "Dry for 2+ days"], ["rain_24h", "🌦", "Rained in the last day"], ["raining", "🌧", "Raining now"]] as const).map(([v, icon, l]) => (
+              <Choice key={v} name="weather" checked={a.weather === v} onChange={() => update({ weather: v })} label={<><Emoji>{icon}</Emoji>{l}</>} />
             ))}
           </div>
         </fieldset>
@@ -246,7 +246,7 @@ function ObserveStep({ a, setA, demo }: { a: Assessment; setA: (fn: (p: Assessme
                 <summary className="cursor-pointer text-cyan-800">Scientists call this <strong>{ind.term}</strong> · why it matters</summary>
                 <p className="mt-2">{ind.termExplainer}</p>
                 <p className="mt-1">{ind.whyItMatters}</p>
-                <p className="mt-1 flex gap-2">{ind.lenses.map((l) => <Badge key={l}>{LENS_META[l].icon} {LENS_META[l].label}</Badge>)}</p>
+                <p className="mt-1 flex gap-2">{ind.lenses.map((l) => <Badge key={l}><Emoji>{LENS_META[l].icon}</Emoji>{LENS_META[l].label}</Badge>)}</p>
               </details>
 
               {s && (
@@ -293,7 +293,7 @@ function LifeStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
       <Card>
         <StepHeading title="Life and people" intro="One Health means people, animals and the environment share the same water. Who's using this stream?" />
         <fieldset>
-          <legend className="font-medium">🐟 Wildlife you saw</legend>
+          <legend className="font-medium"><Emoji>🐟</Emoji>Wildlife you saw</legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {WILDLIFE_OPTIONS.map((o) => (
               <Choice key={o.value} type="checkbox" checked={a.wildlife.includes(o.value)} onChange={() => update({ wildlife: toggle(a.wildlife, o.value) })} label={o.label} />
@@ -301,7 +301,7 @@ function LifeStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
           </div>
         </fieldset>
         <fieldset className="mt-6">
-          <legend className="font-medium">🧍 People and pets in contact with the water</legend>
+          <legend className="font-medium"><Emoji>🧍</Emoji>People and pets in contact with the water</legend>
           <p className="text-xs text-slate-600">This tells health authorities whether pollution could actually reach people.</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {HUMAN_CONTACT_OPTIONS.map((o) => (
@@ -311,7 +311,7 @@ function LifeStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
         </fieldset>
       </Card>
       <Card>
-        <h2 className="font-medium">🧪 Water tests <span className="font-normal text-slate-600">(optional — if you have a kit)</span></h2>
+        <h2 className="font-medium"><Emoji>🧪</Emoji>Water tests <span className="font-normal text-slate-600">(optional — if you have a kit)</span></h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           <NumberField label="Temperature (°C)" value={a.tests.temperatureC} onChange={(v) => update({ tests: { ...a.tests, temperatureC: num(v) } })} />
           <NumberField label="pH" value={a.tests.ph} onChange={(v) => update({ tests: { ...a.tests, ph: num(v) } })} />
@@ -391,7 +391,7 @@ function ReviewStep({ a, review, setReview, onJump, onSubmit }: { a: Assessment;
             <div className="grid gap-3 sm:grid-cols-3">
               {(["human", "animal", "environment"] as const).map((l) => (
                 <div key={l} className="rounded-lg bg-slate-50 p-3">
-                  <p className="mb-1 font-medium">{LENS_META[l].icon} {LENS_META[l].label}</p>
+                  <p className="mb-1 font-medium"><Emoji>{LENS_META[l].icon}</Emoji>{LENS_META[l].label}</p>
                   <p className="text-slate-700">{review.oneHealth[l]}</p>
                 </div>
               ))}
@@ -441,7 +441,7 @@ function Submitted({ sub, onRestart }: { sub: Submission; onRestart: () => void 
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
-function Choice({ label, checked, onChange, name, type = "radio" }: { label: string; checked: boolean; onChange: () => void; name?: string; type?: "radio" | "checkbox" }) {
+function Choice({ label, checked, onChange, name, type = "radio" }: { label: React.ReactNode; checked: boolean; onChange: () => void; name?: string; type?: "radio" | "checkbox" }) {
   return (
     <label className={cx("flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm transition has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-cyan-700", checked ? "border-cyan-700 bg-cyan-50 font-medium" : "border-slate-200 hover:border-slate-400")}>
       <input type={type} name={name} checked={checked} onChange={onChange} className="h-4 w-4 accent-cyan-800" />
