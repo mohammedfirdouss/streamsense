@@ -7,6 +7,9 @@ import "./globals.css";
 const body = Atkinson_Hyperlegible_Next({
   variable: "--font-body",
   subsets: ["latin"],
+  // Next has no metrics for this font yet, so name the fallback ourselves.
+  adjustFontFallback: false,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 const slab = Zilla_Slab({
