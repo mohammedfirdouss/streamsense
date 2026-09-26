@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import type { AssessmentReview, PhotoAnalysis } from "@/lib/ai/schemas";
 import { resizeImage } from "@/lib/image";
 import {
@@ -17,10 +17,12 @@ import {
 import { oneHealthSignals, scoreAssessment } from "@/lib/scoring";
 import { saveSubmission, type Submission } from "@/lib/store";
 import { dataConfidence, validateAssessment } from "@/lib/validation";
-import { CheckList, ConfidenceMeter, LENS_META, ScoreDial, ScoreExplanation, SignalList } from "../insights";
-import { AiBadge, Badge, Button, Card, cx, Emoji } from "../ui";
+import { CheckList, ConfidenceMeter, LensLabel, LensMark, ScoreDial, ScoreExplanation, SignalList } from "../insights";
+import { AiBadge, Badge, BUTTON_BASE, BUTTON_VARIANTS, Button, Card, cx, PencilMark, StreamMark } from "../ui";
 
-const STEPS = ["Site", "Photos", "Observe", "Life & people", "Review"] as const;
+const STEPS = ["Site", "Photos", "Observe", "Life and people", "Review"] as const;
+
+const INPUT = "mt-1.5 w-full rounded-sm border border-line bg-card px-3 py-2.5 text-ink placeholder:text-ink-soft/70 focus:border-river";
 
 type PhotoResult = Omit<PhotoAnalysis, "suggestions"> & { suggestions: AiSuggestion[]; demo: boolean };
 
@@ -49,9 +51,9 @@ export function AssessWizard() {
       {step === 4 && <ReviewStep a={a} review={review} setReview={setReview} onJump={go} onSubmit={() => setSubmitted(saveSubmission(a, review ?? undefined))} />}
 
       {step < 4 && (
-        <div className="mt-6 flex justify-between">
-          <Button variant="ghost" onClick={() => go(step - 1)} disabled={step === 0}>← Back</Button>
-          <Button onClick={() => go(step + 1)}>Next: {STEPS[step + 1]} →</Button>
+        <div className="mt-6 flex justify-between gap-3">
+          <Button variant="ghost" onClick={() => go(step - 1)} disabled={step === 0}>Back</Button>
+          <Button onClick={() => go(step + 1)}>Next: {STEPS[step + 1]}</Button>
         </div>
       )}
     </div>
@@ -61,35 +63,40 @@ export function AssessWizard() {
 function Stepper({ step, onJump }: { step: number; onJump: (n: number) => void }) {
   return (
     <nav aria-label="Survey progress" className="mb-6">
-      <ol className="flex gap-1">
+      <ol className="grid grid-cols-5 overflow-hidden rounded-md border border-line bg-card">
         {STEPS.map((s, i) => (
-          <li key={s} className="flex-1">
+          <li key={s} className={cx(i > 0 && "border-l border-line")}>
             <button
               onClick={() => onJump(i)}
               aria-current={i === step ? "step" : undefined}
               className={cx(
-                "w-full border-t-4 pt-2 text-left text-xs font-medium",
-                i < step && "border-cyan-700 text-cyan-900",
-                i === step && "border-cyan-800 text-cyan-950",
-                i > step && "border-slate-200 text-slate-500",
+                "flex h-full w-full flex-col items-start px-2 py-2 text-left text-xs sm:px-3 sm:text-sm",
+                i === step ? "bg-river text-card" : i < step ? "text-river-deep hover:bg-river-wash" : "text-ink-soft hover:bg-river-wash",
               )}
             >
-              <span className="hidden sm:inline">{i + 1}. </span>{s}
+              <span className="font-display text-lg leading-none font-bold">{i + 1}</span>
+              <span className="mt-1 hidden leading-tight sm:block">{s}</span>
             </button>
           </li>
         ))}
       </ol>
+      <p className="mt-2 text-sm text-ink-soft sm:hidden">Step {step + 1} of 5: {STEPS[step]}</p>
     </nav>
   );
 }
 
 function StepHeading({ title, intro }: { title: string; intro: string }) {
   return (
-    <div className="mb-5">
-      <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
-      <p className="mt-1 text-slate-600">{intro}</p>
+    <div className="mb-6">
+      <h1 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">{title}</h1>
+      <p className="mt-2 max-w-prose text-ink-soft">{intro}</p>
     </div>
   );
+}
+
+/** Suggestions from the photo assistant, written in pencil beside the question. */
+function PencilNote({ children }: { children: ReactNode }) {
+  return <div className="mt-4 border-l-2 border-dashed border-pencil bg-pencil-wash/70 py-3 pr-3 pl-4 text-sm">{children}</div>;
 }
 
 // ─── Step 1: Site ────────────────────────────────────────────────────────────
@@ -117,27 +124,27 @@ function SiteStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
 
   return (
     <Card>
-      <StepHeading title="Where are you?" intro="About 10 minutes. No expertise needed — we'll explain everything as we go." />
-      <div className="space-y-5">
+      <StepHeading title="Where are you?" intro="This takes about 10 minutes. You don't need to be an expert. We explain everything as we go." />
+      <div className="space-y-6">
         <label className="block">
-          <span className="text-sm font-medium">Your name or group</span>
-          <input className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={a.observer} onChange={(e) => update({ observer: e.target.value })} placeholder="e.g. Sam, or Riverside Primary Year 5" />
+          <span className="font-semibold">Your name or group</span>
+          <input className={INPUT} value={a.observer} onChange={(e) => update({ observer: e.target.value })} placeholder="For example Sam, or Riverside Primary Year 5" />
         </label>
         <label className="block">
-          <span className="text-sm font-medium">Stream and spot name <span className="text-rose-700">*</span></span>
-          <input className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={a.site.name} onChange={(e) => update({ site: { ...a.site, name: e.target.value } })} placeholder="e.g. Millbrook — by the footbridge" required />
+          <span className="font-semibold">Stream and spot name <span className="text-rose-700" aria-hidden>*</span><span className="sr-only">(required)</span></span>
+          <input className={INPUT} value={a.site.name} onChange={(e) => update({ site: { ...a.site, name: e.target.value } })} placeholder="For example Millbrook, by the footbridge" required />
         </label>
         <div>
-          <Button variant="secondary" onClick={locate} disabled={locating}><Emoji>📍</Emoji>{locating ? "Finding you…" : a.site.lat ? "Update location" : "Use my location"}</Button>
-          {a.site.lat !== undefined && <p className="mt-2 text-sm text-emerald-800">✓ Location saved ({a.site.lat}, {a.site.lng})</p>}
+          <Button variant="secondary" onClick={locate} disabled={locating}>{locating ? "Finding you…" : a.site.lat ? "Update location" : "Use my location"}</Button>
+          {a.site.lat !== undefined && <p className="mt-2 text-sm text-emerald-800">Location saved ({a.site.lat}, {a.site.lng})</p>}
           {geoError && <p className="mt-2 text-sm text-amber-800" role="alert">{geoError}</p>}
         </div>
         <fieldset>
-          <legend className="text-sm font-medium">Weather</legend>
-          <p className="text-xs text-slate-600">Rain washes pollution from roads into streams, so it changes what you&apos;ll see.</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {([["dry", "☀️", "Dry for 2+ days"], ["rain_24h", "🌦", "Rained in the last day"], ["raining", "🌧", "Raining now"]] as const).map(([v, icon, l]) => (
-              <Choice key={v} name="weather" checked={a.weather === v} onChange={() => update({ weather: v })} label={<><Emoji>{icon}</Emoji>{l}</>} />
+          <legend className="font-semibold">Weather</legend>
+          <p className="text-sm text-ink-soft">Rain washes pollution from roads into streams, so it changes what you&apos;ll see.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            {([["dry", "Dry for 2 or more days"], ["rain_24h", "Rained in the last day"], ["raining", "Raining now"]] as const).map(([v, l]) => (
+              <Choice key={v} name="weather" checked={a.weather === v} onChange={() => update({ weather: v })} label={l} />
             ))}
           </div>
         </fieldset>
@@ -177,44 +184,48 @@ function PhotoStep({ a, update, result, setResult }: { a: Assessment; update: (p
 
   return (
     <Card>
-      <StepHeading title="Take a photo of the stream" intro="Show the water and both banks if you can. Our photo assistant will suggest answers — you'll check every one." />
+      <StepHeading title="Take a photo of the stream" intro="Show the water and both banks if you can. The photo assistant will suggest answers, and you check every one." />
       <div className="flex flex-wrap gap-3">
         {a.photos.map((p, i) => (
           <div key={i} className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p} alt={`Stream photo ${i + 1}`} className="h-32 w-32 rounded-lg object-cover" />
-            <button className="absolute right-1 top-1 rounded-full bg-white/90 px-2 text-sm" aria-label={`Remove photo ${i + 1}`} onClick={() => { update({ photos: a.photos.filter((_, j) => j !== i), aiSuggestions: [], aiDecisions: {} }); setResult(null); }}>✕</button>
+            <img src={p} alt={`Stream photo ${i + 1}`} className="h-32 w-32 rounded-sm border border-line object-cover" />
+            <button className="absolute top-1 right-1 rounded-sm bg-card/95 px-2 py-0.5 text-xs font-semibold text-ink" aria-label={`Remove photo ${i + 1}`} onClick={() => { update({ photos: a.photos.filter((_, j) => j !== i), aiSuggestions: [], aiDecisions: {} }); setResult(null); }}>Remove</button>
           </div>
         ))}
         {a.photos.length < 3 && (
-          <label className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-sm text-slate-600 hover:border-cyan-700">
-            <span aria-hidden className="text-2xl">📷</span> Add photo
+          <label className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed border-line text-sm font-semibold text-river-deep hover:border-river has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-pencil">
+            <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
+              <path d="M3 8h4l2-3h6l2 3h4v11H3z" />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+            Add photo
             <input type="file" accept="image/*" capture="environment" multiple className="sr-only" onChange={(e) => addPhotos(e.target.files)} />
           </label>
         )}
       </div>
 
       {a.photos.length > 0 && !result && (
-        <Button className="mt-5" onClick={analyse} disabled={busy}>{busy ? "Looking at your photos…" : "✦ Ask the photo assistant"}</Button>
+        <Button className="mt-5" onClick={analyse} disabled={busy}>{busy ? "Looking at your photos…" : "Ask the photo assistant"}</Button>
       )}
       {error && <p className="mt-3 text-sm text-amber-800" role="alert">{error}</p>}
 
       {result && (
-        <div className="mt-5 rounded-lg border border-violet-200 bg-violet-50 p-4">
+        <PencilNote>
           <AiBadge demo={result.demo} />
           {!result.showsWaterbody ? (
-            <p className="mt-2 text-sm">This doesn&apos;t look like a stream. Try a photo showing the water and banks.</p>
+            <p className="mt-2">This doesn&apos;t look like a stream. Try a photo showing the water and banks.</p>
           ) : (
             <>
-              <p className="mt-2 text-sm text-slate-800">{result.summary}</p>
-              {!result.photoQuality.usable && <p className="mt-2 text-sm text-amber-800">⚠️ {result.photoQuality.issues.join(", ")}</p>}
-              {result.photoQuality.retakeTip && <p className="mt-1 text-sm text-slate-700">Tip: {result.photoQuality.retakeTip}</p>}
-              <p className="mt-2 text-sm font-medium">{result.suggestions.filter((s) => s.value !== "cannot_tell").length} suggestions are waiting for you on the next step.</p>
+              <p className="mt-2">{result.summary}</p>
+              {!result.photoQuality.usable && <p className="mt-2 text-amber-900">Photo problem: {result.photoQuality.issues.join(", ")}</p>}
+              {result.photoQuality.retakeTip && <p className="mt-1 text-ink-soft">Tip: {result.photoQuality.retakeTip}</p>}
+              <p className="mt-2 font-semibold text-pencil">{result.suggestions.filter((s) => s.value !== "cannot_tell").length} suggestions are waiting for you on the next step.</p>
             </>
           )}
-        </div>
+        </PencilNote>
       )}
-      <p className="mt-5 text-xs text-slate-500">No camera? Skip this step — you can complete the survey by eye.</p>
+      <p className="mt-6 text-sm text-ink-soft">No camera? Skip this step. You can do the whole survey by eye.</p>
     </Card>
   );
 }
@@ -233,43 +244,47 @@ function ObserveStep({ a, setA, demo }: { a: Assessment; setA: (fn: (p: Assessme
   return (
     <div className="space-y-4">
       <Card>
-        <StepHeading title="What do you notice?" intro="Trust your senses. Where the photo assistant has a suggestion, it's shown — but nothing is filled in until you choose." />
+        <StepHeading title="What do you notice?" intro="Trust your senses. If the photo assistant has a suggestion, you'll see it in pencil blue. Nothing is filled in until you choose." />
+        <p className="text-sm text-ink-soft">{Object.keys(a.answers).length} of {INDICATORS.length} answered</p>
       </Card>
-      {INDICATORS.map((ind) => {
+      {INDICATORS.map((ind, n) => {
         const s = a.aiSuggestions.find((x) => x.indicator === ind.id && x.value !== "cannot_tell");
         const chosen = a.answers[ind.id];
         return (
           <Card key={ind.id}>
             <fieldset>
-              <legend className="text-lg font-medium text-slate-900">{ind.question}</legend>
-              <details className="mt-1 text-sm text-slate-600">
-                <summary className="cursor-pointer text-cyan-800">Scientists call this <strong>{ind.term}</strong> · why it matters</summary>
+              <legend className="flex gap-3 font-display text-xl leading-snug font-semibold">
+                <span className="text-silt tabular-nums">{n + 1}</span>
+                <span>{ind.question}</span>
+              </legend>
+              <details className="mt-2 text-sm text-ink-soft">
+                <summary className="cursor-pointer text-river-deep">Scientists call this <strong>{ind.term}</strong>. Why it matters</summary>
                 <p className="mt-2">{ind.termExplainer}</p>
                 <p className="mt-1">{ind.whyItMatters}</p>
-                <p className="mt-1 flex gap-2">{ind.lenses.map((l) => <Badge key={l}><Emoji>{LENS_META[l].icon}</Emoji>{LENS_META[l].label}</Badge>)}</p>
+                <p className="mt-2 flex flex-wrap gap-2">{ind.lenses.map((l) => <Badge key={l}><LensLabel lens={l} /></Badge>)}</p>
               </details>
 
               {s && (
-                <div className="mt-3 rounded-lg border border-violet-200 bg-violet-50 p-3 text-sm">
+                <PencilNote>
                   <div className="flex flex-wrap items-center gap-2">
                     <AiBadge demo={demo} />
-                    <Badge tone={s.confidence === "high" ? "green" : s.confidence === "medium" ? "amber" : "slate"}>{s.confidence} confidence</Badge>
+                    <span className="text-pencil">{s.confidence} confidence</span>
                   </div>
-                  <p className="mt-2"><strong>{optionLabel(ind.id, s.value)}</strong> — <span className="text-slate-700">{s.evidence}</span></p>
+                  <p className="mt-2"><strong className="text-pencil">{optionLabel(ind.id, s.value)}.</strong> <span className="text-ink-soft">{s.evidence}</span></p>
                   {chosen === undefined ? (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <Button variant="secondary" className="min-h-9 py-1" onClick={() => answer(ind, s.value, true)}>Looks right</Button>
-                      <span className="self-center text-slate-600">or pick what you see below</span>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <button className={cx(BUTTON_BASE, "min-h-9 border border-pencil bg-card py-1 text-pencil hover:bg-pencil-wash")} onClick={() => answer(ind, s.value, true)}>Looks right</button>
+                      <span className="text-ink-soft">or pick what you see below</span>
                     </div>
                   ) : (
-                    <p className="mt-2 text-slate-700">
-                      {a.aiDecisions[ind.id] === "accepted" ? "✓ You agreed with the suggestion." : "✎ You chose differently — your observation is what counts."}
+                    <p className="mt-2 text-ink-soft">
+                      {a.aiDecisions[ind.id] === "accepted" ? "You agreed with the suggestion." : "You chose differently. Your observation is what counts."}
                     </p>
                   )}
-                </div>
+                </PencilNote>
               )}
 
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {ind.options.map((o) => (
                   <Choice key={o.value} name={ind.id} checked={chosen === o.value} onChange={() => answer(ind, o.value)} label={o.label} />
                 ))}
@@ -291,19 +306,19 @@ function LifeStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
   return (
     <div className="space-y-4">
       <Card>
-        <StepHeading title="Life and people" intro="One Health means people, animals and the environment share the same water. Who's using this stream?" />
+        <StepHeading title="Life and people" intro="People, animals and nature share the same water. Who is using this stream?" />
         <fieldset>
-          <legend className="font-medium"><Emoji>🐟</Emoji>Wildlife you saw</legend>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <legend className="flex items-center gap-2 font-semibold"><LensMark lens="animal" className="h-5 w-5 text-river" />Wildlife you saw</legend>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {WILDLIFE_OPTIONS.map((o) => (
               <Choice key={o.value} type="checkbox" checked={a.wildlife.includes(o.value)} onChange={() => update({ wildlife: toggle(a.wildlife, o.value) })} label={o.label} />
             ))}
           </div>
         </fieldset>
-        <fieldset className="mt-6">
-          <legend className="font-medium"><Emoji>🧍</Emoji>People and pets in contact with the water</legend>
-          <p className="text-xs text-slate-600">This tells health authorities whether pollution could actually reach people.</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <fieldset className="mt-8">
+          <legend className="flex items-center gap-2 font-semibold"><LensMark lens="human" className="h-5 w-5 text-river" />People and pets in contact with the water</legend>
+          <p className="text-sm text-ink-soft">This tells health teams whether pollution could actually reach people.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {HUMAN_CONTACT_OPTIONS.map((o) => (
               <Choice key={o.value} type="checkbox" checked={a.humanContact.includes(o.value)} onChange={() => update({ humanContact: toggle(a.humanContact, o.value) })} label={o.label} />
             ))}
@@ -311,15 +326,15 @@ function LifeStep({ a, update }: { a: Assessment; update: (p: Partial<Assessment
         </fieldset>
       </Card>
       <Card>
-        <h2 className="font-medium"><Emoji>🧪</Emoji>Water tests <span className="font-normal text-slate-600">(optional — if you have a kit)</span></h2>
+        <h2 className="font-semibold">Water tests <span className="font-normal text-ink-soft">(optional, if you have a kit)</span></h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           <NumberField label="Temperature (°C)" value={a.tests.temperatureC} onChange={(v) => update({ tests: { ...a.tests, temperatureC: num(v) } })} />
           <NumberField label="pH" value={a.tests.ph} onChange={(v) => update({ tests: { ...a.tests, ph: num(v) } })} />
           <NumberField label="Nitrate (mg/L)" value={a.tests.nitrateMgL} onChange={(v) => update({ tests: { ...a.tests, nitrateMgL: num(v) } })} />
         </div>
-        <label className="mt-5 block">
-          <span className="font-medium">Anything else?</span>
-          <textarea className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" rows={3} value={a.notes} onChange={(e) => update({ notes: e.target.value })} placeholder="e.g. a pipe was pouring grey water though it hasn't rained" />
+        <label className="mt-6 block">
+          <span className="font-semibold">Anything else?</span>
+          <textarea className={INPUT} rows={3} value={a.notes} onChange={(e) => update({ notes: e.target.value })} placeholder="For example, a pipe was pouring grey water even though it hasn't rained" />
         </label>
       </Card>
     </div>
@@ -361,60 +376,60 @@ function ReviewStep({ a, review, setReview, onJump, onSubmit }: { a: Assessment;
       </Card>
 
       <Card>
-        <h2 className="mb-3 font-semibold">One Health signals</h2>
+        <h2 className="mb-4 font-display text-2xl font-semibold">Health alerts</h2>
         <SignalList signals={signals} />
       </Card>
 
       <Card>
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="font-semibold">Data checks</h2>
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h2 className="font-display text-2xl font-semibold">Data checks</h2>
           <Button variant="ghost" className="min-h-9 py-1" onClick={() => onJump(2)}>Edit answers</Button>
         </div>
         <CheckList checks={checks} />
-        <div className="mt-4 border-t border-slate-100 pt-4"><ConfidenceMeter confidence={confidence} /></div>
+        <div className="mt-5 border-t border-line pt-5"><ConfidenceMeter confidence={confidence} /></div>
       </Card>
 
-      <Card className="border-violet-200">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <h2 className="font-semibold">✦ AI second opinion</h2>
+      <Card className="border-pencil/40">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-pencil"><PencilMark className="h-5 w-5" />AI second opinion</h2>
           {review && <AiBadge demo={review.demo} />}
         </div>
         {!review ? (
           <>
-            <p className="text-sm text-slate-600">Get a plain-language explanation of your results and any questions worth double-checking. It can&apos;t change your answers or score.</p>
-            <Button variant="secondary" className="mt-3" onClick={askReview} disabled={busy || score.score === null}>{busy ? "Reading your survey…" : "Explain my results"}</Button>
+            <p className="text-ink-soft">Get a plain English explanation of your results and anything worth checking again. It can&apos;t change your answers or score.</p>
+            <button className={cx(BUTTON_BASE, "mt-4 border border-pencil bg-card text-pencil hover:bg-pencil-wash")} onClick={askReview} disabled={busy || score.score === null}>{busy ? "Reading your survey…" : "Explain my results"}</button>
             {error && <p className="mt-2 text-sm text-amber-800" role="alert">{error}</p>}
           </>
         ) : (
-          <div className="space-y-4 text-sm">
+          <div className="space-y-5">
             <p>{review.plainLanguageSummary}</p>
             <div className="grid gap-3 sm:grid-cols-3">
               {(["human", "animal", "environment"] as const).map((l) => (
-                <div key={l} className="rounded-lg bg-slate-50 p-3">
-                  <p className="mb-1 font-medium"><Emoji>{LENS_META[l].icon}</Emoji>{LENS_META[l].label}</p>
-                  <p className="text-slate-700">{review.oneHealth[l]}</p>
+                <div key={l} className="rounded-sm bg-pencil-wash/70 p-3 text-sm">
+                  <p className="mb-1 font-semibold text-pencil"><LensLabel lens={l} /></p>
+                  <p className="text-ink-soft">{review.oneHealth[l]}</p>
                 </div>
               ))}
             </div>
             {review.doubleCheckQuestions.length > 0 && (
               <div>
-                <p className="font-medium">Worth a second look</p>
+                <p className="font-semibold">Worth a second look</p>
                 <ul className="mt-1 list-disc space-y-1 pl-5">
-                  {review.doubleCheckQuestions.map((q) => <li key={q.question}>{q.question} <span className="text-slate-600">— {q.reason}</span></li>)}
+                  {review.doubleCheckQuestions.map((q) => <li key={q.question}>{q.question} <span className="text-ink-soft">{q.reason}</span></li>)}
                 </ul>
               </div>
             )}
             <div>
-              <p className="font-medium">Next steps</p>
+              <p className="font-semibold">Next steps</p>
               <ul className="mt-1 list-disc space-y-1 pl-5">{review.nextSteps.map((s) => <li key={s}>{s}</li>)}</ul>
             </div>
           </div>
         )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="ghost" onClick={() => onJump(3)}>← Back</Button>
-        <Button onClick={onSubmit} disabled={blocked}>{blocked ? "Fix the ⛔ items to submit" : "Submit report"}</Button>
+      <div className="flex justify-between gap-3">
+        <Button variant="ghost" onClick={() => onJump(3)}>Back</Button>
+        <Button onClick={onSubmit} disabled={blocked}>{blocked ? "Fix the must fix items to submit" : "Submit report"}</Button>
       </div>
     </div>
   );
@@ -423,17 +438,17 @@ function ReviewStep({ a, review, setReview, onJump, onSubmit }: { a: Assessment;
 function Submitted({ sub, onRestart }: { sub: Submission; onRestart: () => void }) {
   const reviewing = sub.status === "needs_review";
   return (
-    <div className="mx-auto max-w-xl px-4 py-16 text-center">
-      <p className="text-5xl" aria-hidden>{reviewing ? "🔎" : "🌊"}</p>
-      <h1 className="mt-4 text-2xl font-semibold">Thank you — report submitted</h1>
-      <p className="mt-2 text-slate-700">
+    <div className="mx-auto max-w-xl px-4 py-16">
+      <StreamMark className="h-8 w-14 text-river" />
+      <h1 className="mt-5 font-display text-4xl font-semibold">Report submitted. Thank you.</h1>
+      <p className="mt-3 text-lg text-ink-soft">
         {reviewing
-          ? "Your report includes something unusual, so a trained reviewer will take a look before it's published. That's how we keep citizen data trustworthy."
-          : "Your report passed all checks and is now part of the stream's health record."}
+          ? "Your report includes something unusual, so a trained reviewer will look at it before it is published. That's how we keep volunteer data trustworthy."
+          : "Your report passed all checks and is now part of this stream's health record."}
       </p>
-      <div className="mt-6 flex justify-center gap-3">
+      <div className="mt-8 flex flex-wrap gap-3">
         <Button onClick={onRestart}>Survey another spot</Button>
-        <Link href="/review" className="inline-flex min-h-11 items-center rounded-lg border border-cyan-800 px-4 text-sm font-medium text-cyan-900 hover:bg-cyan-50">See review queue</Link>
+        <Link href="/review" className={cx(BUTTON_BASE, BUTTON_VARIANTS.secondary)}>See the review queue</Link>
       </div>
     </div>
   );
@@ -441,10 +456,10 @@ function Submitted({ sub, onRestart }: { sub: Submission; onRestart: () => void 
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
-function Choice({ label, checked, onChange, name, type = "radio" }: { label: React.ReactNode; checked: boolean; onChange: () => void; name?: string; type?: "radio" | "checkbox" }) {
+function Choice({ label, checked, onChange, name, type = "radio" }: { label: ReactNode; checked: boolean; onChange: () => void; name?: string; type?: "radio" | "checkbox" }) {
   return (
-    <label className={cx("flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm transition has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-cyan-700", checked ? "border-cyan-700 bg-cyan-50 font-medium" : "border-slate-200 hover:border-slate-400")}>
-      <input type={type} name={name} checked={checked} onChange={onChange} className="h-4 w-4 accent-cyan-800" />
+    <label className={cx("flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-pencil", checked ? "border-river bg-river-wash font-semibold text-river-deep" : "border-line bg-card hover:border-ink-soft")}>
+      <input type={type} name={name} checked={checked} onChange={onChange} className="h-4 w-4 shrink-0 accent-river" />
       {label}
     </label>
   );
@@ -453,8 +468,8 @@ function Choice({ label, checked, onChange, name, type = "radio" }: { label: Rea
 function NumberField({ label, value, onChange }: { label: string; value?: number; onChange: (v: string) => void }) {
   return (
     <label className="block">
-      <span className="text-sm">{label}</span>
-      <input type="number" inputMode="decimal" step="any" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={value ?? ""} onChange={(e) => onChange(e.target.value)} />
+      <span className="text-sm font-semibold">{label}</span>
+      <input type="number" inputMode="decimal" step="any" className={INPUT} value={value ?? ""} onChange={(e) => onChange(e.target.value)} />
     </label>
   );
 }
