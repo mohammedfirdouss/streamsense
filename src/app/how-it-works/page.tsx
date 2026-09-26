@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "How the AI works | StreamSense" };
 // `ai` marks the steps where the AI is involved, drawn in pencil blue.
 const FLOW: { title: string; body: string; ai?: boolean }[] = [
   { title: "The volunteer takes photos", body: "Photos are made smaller on the phone to save mobile data." },
-  { title: "The photo assistant looks", body: "Claude suggests answers for the 9 questions a photo can show, each with how sure it is and what it saw. It can say \"can't tell\", and it never guesses smell or chemistry.", ai: true },
+  { title: "The photo assistant looks", body: "The AI suggests answers for the 9 questions a photo can show, each with how sure it is and what it saw. It can say \"can't tell\", and it never guesses smell or chemistry.", ai: true },
   { title: "Safety checks", body: "Server code checks every suggestion against the survey, drops anything it doesn't recognise, and keeps one suggestion per question." },
   { title: "The volunteer decides", body: "Suggestions sit next to the question but are never filled in. Every accept or reject is saved for reviewers." },
   { title: "Fixed scoring", body: "The health score and alerts come from the published rules below. The same answers always give the same result." },

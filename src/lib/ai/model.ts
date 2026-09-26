@@ -35,7 +35,9 @@ export async function structuredCall<T extends z.ZodType>(opts: {
   text: string;
   images?: ImageInput[];
 }): Promise<z.infer<T>> {
-  const { $schema: _, ...jsonSchema } = z.toJSONSchema(opts.schema) as Record<string, unknown>;
+  // Gemini takes plain JSON Schema; the "$schema" dialect marker isn't needed.
+  const jsonSchema = z.toJSONSchema(opts.schema) as Record<string, unknown>;
+  delete jsonSchema.$schema;
 
   const response = await getClient().models.generateContent({
     model: MODEL,

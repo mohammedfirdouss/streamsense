@@ -11,7 +11,7 @@ City streams suffer from sewage, dirty runoff, litter and loss of wildlife. Volu
 ## How StreamSense helps
 
 1. **Guided survey.** 10 simple questions. Each one shows the science word behind it and why it matters.
-2. **Photo assistant.** Claude looks at your photo and suggests answers. It says "can't tell" instead of guessing.
+2. **Photo assistant.** The AI looks at your photo and suggests answers. It says "can't tell" instead of guessing.
 3. **Health score.** A fixed, published formula works out the score, not the AI.
 4. **Health alerts.** Simple rules link what you saw to risks for people, animals and nature.
 5. **Data checks.** If answers look odd or clash, the app asks you to double check.

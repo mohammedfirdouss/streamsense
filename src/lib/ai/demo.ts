@@ -3,7 +3,7 @@ import type { OneHealthSignal, StreamHealthScore } from "../scoring";
 import type { AssessmentReview, PhotoAnalysis } from "./schemas";
 
 /**
- * Canned responses used when no ANTHROPIC_API_KEY is configured, so the full
+ * Canned responses used when no GEMINI_API_KEY is configured, so the full
  * human-in-the-loop flow can be demoed offline. The UI labels them clearly.
  */
 export function demoPhotoAnalysis(): PhotoAnalysis {
