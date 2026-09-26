@@ -67,8 +67,3 @@ export function PencilMark({ className }: { className?: string }) {
     </svg>
   );
 }
-
-/** Decorative emoji with a real gap — a plain space collapses visually next to emoji glyphs. */
-export function Emoji({ children }: { children: ReactNode }) {
-  return <span aria-hidden className="mr-1.5 inline-block">{children}</span>;
-}
