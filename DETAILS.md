@@ -19,15 +19,15 @@
 
 ## How it is built
 
-* **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, Anthropic SDK, Zod and Vitest.
-* **AI model:** `claude-opus-5`, with answers checked against a fixed format.
+* **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, Google Gen AI SDK, Zod and Vitest.
+* **AI model:** Google Gemini (`gemini-flash-latest` by default, change it with `GEMINI_MODEL`), with answers checked against a fixed format. The free tier is enough for testing.
 * **Main logic** lives in `src/lib/` and has unit tests:
   * `protocol.ts`: the questions, science words and health links
   * `scoring.ts`: the health score and alert rules
   * `validation.ts`: data checks and human vs AI disagreement
   * `ai/`: prompts, response formats, safety checks and demo answers
 * **Server routes:** `/api/analyze-photo` for photo suggestions and `/api/review` for the second opinion. The server works out the score again itself.
-* **Demo mode:** if no `ANTHROPIC_API_KEY` is set, the app uses clearly marked sample answers, so it works offline.
+* **Demo mode:** if no `GEMINI_API_KEY` is set, the app uses clearly marked sample answers, so it works offline.
 * **Storage:** reports are saved in the browser for now, with some example reports included.
 
 ## Getting started
@@ -36,7 +36,7 @@
 git clone https://github.com/mohammedfirdouss/streamsense.git
 cd streamsense
 npm install
-cp .env.example .env.local   # add your ANTHROPIC_API_KEY, or leave it empty for demo mode
+cp .env.example .env.local   # add your GEMINI_API_KEY, or leave it empty for demo mode
 npm run dev                  # open http://localhost:3000
 ```
 
@@ -47,13 +47,6 @@ Other commands:
 * `npm run lint` runs ESLint
 * `npm run build` makes a production build
 
-## Demo (3 to 5 minutes)
-
-1. **Home page:** explain the problem and the rule that AI suggests but never decides.
-2. **New survey:** name the site, use GPS, add a photo and click **Ask the photo assistant**. Accept one suggestion and change another.
-3. **Report:** show the score and why it was given, the health alerts, the data checks and the AI second opinion.
-4. **Reviewer queue:** open the example sewage report, show the record of human and AI choices, then click **Verify & publish**.
-5. **How the AI works:** show the steps, the score formula and the known limits.
 
 ## Next steps
 
