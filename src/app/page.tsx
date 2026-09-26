@@ -1,69 +1,81 @@
-import Image from "next/image";
+import Link from "next/link";
+
+const STEPS = [
+  { icon: "📷", title: "You observe", body: "A guided 10-minute survey in plain language. Every ecological term is explained, with why it matters for people, animals and nature." },
+  { icon: "✦", title: "AI suggests, you decide", body: "A photo assistant proposes answers with its confidence and evidence. Nothing is filled in until you agree — you're the one standing at the stream." },
+  { icon: "🔎", title: "Checked, scored, reviewed", body: "Transparent rules score stream health and flag One Health risks. Unusual reports go to a human reviewer before publishing." },
+];
+
+const PRINCIPLES = [
+  ["Suggest, never decide", "AI suggestions are opt-in. The observer's answer always wins, and every accept or reject is logged."],
+  ["Explain everything", "Each suggestion shows confidence and visual evidence. Scores come with a breakdown of what lowered them."],
+  ["AI never scores", "The Stream Health Index and One Health signals come from fixed, published rules the AI can't change."],
+  ["Humans in the loop", "Disagreements and unusual findings are sent to expert reviewers, not silently fixed by the AI."],
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div>
+      <section className="bg-gradient-to-b from-cyan-900 to-cyan-800 text-white">
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:py-24">
+          <p className="text-sm font-medium uppercase tracking-wide text-cyan-200">Track 3 · AI-Supported Assessment</p>
+          <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
+            Anyone can check the health of their local stream.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 max-w-2xl text-lg text-cyan-50">
+            StreamSense guides citizen scientists through urban stream assessments with an AI assistant that explains its reasoning and leaves the final call to people. The result is better data and a clearer view of risks to people, animals and ecosystems.
           </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/assess" className="rounded-lg bg-white px-5 py-3 font-medium text-cyan-900 hover:bg-cyan-50">Start a survey</Link>
+            <Link href="/review" className="rounded-lg px-5 py-3 font-medium text-white ring-1 ring-cyan-300 hover:bg-cyan-700">Open the reviewer queue</Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-4 py-14">
+        <h2 className="text-2xl font-semibold">How it works</h2>
+        <ol className="mt-6 grid gap-4 sm:grid-cols-3">
+          {STEPS.map((s, i) => (
+            <li key={s.title} className="rounded-xl border border-slate-200 bg-white p-5">
+              <p className="text-2xl" aria-hidden>{s.icon}</p>
+              <h3 className="mt-2 font-semibold">{i + 1}. {s.title}</h3>
+              <p className="mt-1 text-sm text-slate-700">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto max-w-5xl px-4 py-14">
+          <h2 className="text-2xl font-semibold">Responsible AI by design</h2>
+          <dl className="mt-6 grid gap-6 sm:grid-cols-2">
+            {PRINCIPLES.map(([t, d]) => (
+              <div key={t}>
+                <dt className="font-semibold text-cyan-900">{t}</dt>
+                <dd className="mt-1 text-sm text-slate-700">{d}</dd>
+              </div>
+            ))}
+          </dl>
+          <Link href="/how-it-works" className="mt-6 inline-block text-sm font-medium text-cyan-800 underline">Read how the AI works →</Link>
         </div>
-      </main>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-4 py-14">
+        <h2 className="text-2xl font-semibold">One stream, three kinds of health</h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          {[
+            ["🧍", "People", "Sewage signs and toxic algae near places where children play or people paddle are flagged as urgent."],
+            ["🐟", "Animals", "Dead fish, oily sheens and blooms that are dangerous to dogs trigger animal-health alerts."],
+            ["🌿", "Environment", "Bank habitat, erosion, nutrients and flow show how well the stream can filter water and support life."],
+          ].map(([i, t, d]) => (
+            <div key={t} className="rounded-xl bg-cyan-50 p-5">
+              <p className="text-2xl" aria-hidden>{i}</p>
+              <h3 className="mt-2 font-semibold">{t}</h3>
+              <p className="mt-1 text-sm text-slate-700">{d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
