@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiRefusalError, aiEnabled, structuredCall } from "@/lib/ai/claude";
+import { AiRefusalError, aiEnabled, structuredCall } from "@/lib/ai/model";
 import { demoPhotoAnalysis } from "@/lib/ai/demo";
 import { PHOTO_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { sanitizeSuggestions } from "@/lib/ai/sanitize";
@@ -28,17 +28,11 @@ export async function POST(req: Request) {
     const analysis = await structuredCall({
       system: PHOTO_SYSTEM_PROMPT,
       schema: PhotoAnalysisSchema,
-      effort: "medium",
-      content: [
-        ...parsed.data.photos.map((p) => {
-          const [, mediaType, data] = p.match(DATA_URL)!;
-          return {
-            type: "image" as const,
-            source: { type: "base64" as const, media_type: mediaType as "image/jpeg", data },
-          };
-        }),
-        { type: "text", text: "Here are my photos of the stream. What can you see?" },
-      ],
+      images: parsed.data.photos.map((p) => {
+        const [, mimeType, data] = p.match(DATA_URL)!;
+        return { mimeType, data };
+      }),
+      text: "Here are my photos of the stream. What can you see?",
     });
     return Response.json({ ...analysis, suggestions: sanitizeSuggestions(analysis.suggestions), demo: false });
   } catch (err) {
